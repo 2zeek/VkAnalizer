@@ -47,6 +47,13 @@ public class Post {
         this.reposts = reposts;
     }
 
+    public Post(Integer id, String text, Integer likes, Integer reposts) {
+        this.id = id;
+        this.text = text;
+        this.likes = likes;
+        this.reposts = reposts;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -64,11 +71,12 @@ public class Post {
     }
 
     public static Post wallpostToPost (WallpostFull wallpostFull) {
-        Post post = new Post();
-        post.setId(wallpostFull.getId());
-        post.setText(wallpostFull.getText());
-        post.setLikes(wallpostFull.getLikes().getCount());
-        post.setReposts(wallpostFull.getReposts().getCount());
+        Post post = new Post(
+                wallpostFull.getId(),
+                wallpostFull.getText(),
+                wallpostFull.getLikes().getCount(),
+                wallpostFull.getReposts().getCount()
+        );
         return post;
     }
 }

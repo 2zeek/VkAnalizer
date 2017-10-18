@@ -5,7 +5,6 @@ import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.wall.WallpostFull;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import dao.PostDao;
-import dao.impl.PostDaoImpl;
 import model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +28,7 @@ import static model.Post.wallpostToPost;
 @SpringBootApplication
 @Import({
         VkClientConfiguration.class,
-        PostDaoImpl.class
+        PostDao.class
 })
 @EnableScheduling
 public class VkAnalizer {
