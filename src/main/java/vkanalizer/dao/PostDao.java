@@ -31,7 +31,7 @@ public class PostDao {
                         final Post post1 = new Post(
                                 rs.getInt("id"),
                                 rs.getString("text"),
-                                rs.getInt("likes_count"),
+                                rs.getInt("likes"),
                                 rs.getInt("reposts"));
                         return post1;
                     }, id);
