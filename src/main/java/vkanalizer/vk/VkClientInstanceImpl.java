@@ -12,6 +12,8 @@ import com.vk.api.sdk.objects.photos.PhotoUpload;
 import com.vk.api.sdk.objects.photos.responses.*;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import com.vk.api.sdk.objects.wall.responses.PostResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vkanalizer.vk.config.properties.VkClientProperties;
 
 import java.io.File;
@@ -22,6 +24,8 @@ import java.util.List;
  */
 
 public class VkClientInstanceImpl implements VkClientInstance {
+
+    private static Logger log = LoggerFactory.getLogger(VkClientInstanceImpl.class);
 
     private VkClientProperties vkClientProperties;
     private VkApiClient vkApiClient;
@@ -114,6 +118,14 @@ public class VkClientInstanceImpl implements VkClientInstance {
         return vkApiClient.photos()
                 .saveOwnerCoverPhoto((GroupActor) vkClientProperties.getGroup().getActor(),
                         uploadResponse.getPhoto(), uploadResponse.getHash())
+                .execute();
+    }
+
+    public void sendMessage(Integer id, String message) throws ClientException, ApiException {
+        vkApiClient.messages().send((GroupActor) vkClientProperties.getGroup().getActor())
+                .userId(vkClientProperties.getUser().getId())
+                .message(message)
+                .attachment("wall-" + vkClientProperties.getGroup().getId() + "_" + id)
                 .execute();
     }
 }

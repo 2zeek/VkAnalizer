@@ -1,4 +1,4 @@
-package model;
+package vkanalizer.model;
 
 import com.vk.api.sdk.objects.wall.WallpostFull;
 

@@ -4,8 +4,8 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.wall.WallpostFull;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
-import dao.PostDao;
-import model.Post;
+import vkanalizer.dao.PostDao;
+import vkanalizer.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import static model.Post.wallpostToPost;
+import static vkanalizer.model.Post.wallpostToPost;
 
 
 /**
@@ -54,12 +54,18 @@ public class VkAnalizer {
             post = wallpostToPost(wallpostFull);
             inBase = postDao.findById(post.getId());
             if (inBase == null) {
-                log.info("No record in base. Save new data");
+                log.info("Новая запись в сообществе");
                 postDao.insert(post);
+                vkClientInstance.sendMessage(post.getId(), "Новая запись в сообществе");
             } else if (!inBase.equals(post)) {
-                log.info("ALARM! in base: " + inBase.toString()
-                        + "; new data: " + post.toString());
                 postDao.update(post);
+                String message = "";
+                if (post.getLikes() - inBase.getLikes() != 0)
+                    message += "Лайков было/стало: " + inBase.getLikes() + "/" + post.getLikes() + "\n";
+                if (post.getReposts() - inBase.getReposts() != 0)
+                    message += "Репостов было/стало: " + inBase.getReposts() + "/" + post.getReposts();
+                log.info(post.getId() + ": " + message);
+                vkClientInstance.sendMessage(post.getId(), message);
             }
 
         }
