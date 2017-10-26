@@ -44,9 +44,9 @@ public class VkClientInstanceImpl implements VkClientInstance {
         return new VkClientInstanceImpl(vkClientProperties);
     }
 
-    public GetResponse getWall(int id) throws ClientException, ApiException {
+    public GetResponse getWall() throws ClientException, ApiException {
         return vkApiClient.wall().get((UserActor) vkClientProperties.getUser().getActor())
-                .ownerId(id)
+                .ownerId(-vkClientProperties.getGroup().getId())
                 .count(100)
                 .offset(0)
                 .execute();

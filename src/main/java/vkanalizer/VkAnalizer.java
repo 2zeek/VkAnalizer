@@ -47,7 +47,7 @@ public class VkAnalizer {
 
     @Scheduled(fixedDelay = 1800000)
     void doStuff() throws ClientException, ApiException, InterruptedException {
-        GetResponse response = vkClientInstance.getWall(-152033291);
+        GetResponse response = vkClientInstance.getWall();
         Post post;
         Post inBase;
         for (WallpostFull wallpostFull : response.getItems()) {
