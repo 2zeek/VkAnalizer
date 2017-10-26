@@ -1,6 +1,7 @@
 package vkanalizer.model;
 
-import java.util.List;
+import com.vk.api.sdk.objects.wall.WallpostFull;
+
 import java.util.Objects;
 
 public class Post {
@@ -9,8 +10,7 @@ public class Post {
     private String text;
     private Integer likes;
     private Integer reposts;
-    private List<Integer> likesList;
-    private List<Integer> repostsList;
+    private Integer comments;
 
     public Integer getId() {
         return id;
@@ -44,44 +44,47 @@ public class Post {
         this.reposts = reposts;
     }
 
-    public List<Integer> getLikesList() {
-        return likesList;
+    public Integer getComments() {
+        return comments;
     }
 
-    public void setLikesList(List<Integer> likesList) {
-        this.likesList = likesList;
+    public void setComments(Integer comments) {
+        this.comments = comments;
     }
 
-    public List<Integer> getRepostsList() {
-        return repostsList;
+    public Post(Integer id, String text, Integer likes, Integer reposts, Integer comments) {
+        this.id = id;
+        this.text = text;
+        this.likes = likes;
+        this.reposts = reposts;
     }
 
-    public void setRepostsList(List<Integer> repostsList) {
-        this.repostsList = repostsList;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Post that = (Post) obj;
+        return Objects.equals(this.likes, that.likes) &&
+                Objects.equals(this.reposts, that.reposts) &&
+                Objects.equals(this.comments, that.comments);
     }
 
     @Override
     public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", likes=" + likes +
-                ", reposts=" + reposts +
-                ", likesList=" + likesList +
-                ", repostsList=" + repostsList +
-                '}';
+        return String.format(
+                "Post[id=%d, text='%s', likes=%d, reposts=%d, comments=%d]",
+                id, text, likes, reposts, comments);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Post post = (Post) o;
-        return Objects.equals(id, post.id) &&
-                Objects.equals(text, post.text) &&
-                Objects.equals(likes, post.likes) &&
-                Objects.equals(reposts, post.reposts) &&
-                Objects.equals(likesList, post.likesList) &&
-                Objects.equals(repostsList, post.repostsList);
+    public static Post wallpostToPost (WallpostFull wallpostFull) {
+        Post post = new Post(
+                wallpostFull.getId(),
+                wallpostFull.getText(),
+                wallpostFull.getLikes().getCount(),
+                wallpostFull.getReposts().getCount(),
+                wallpostFull.getComments().getCount()
+        );
+        return post;
     }
 }

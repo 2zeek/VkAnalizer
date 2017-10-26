@@ -7,15 +7,11 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
-import com.vk.api.sdk.objects.likes.responses.GetListExtendedResponse;
 import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.photos.PhotoUpload;
 import com.vk.api.sdk.objects.photos.responses.*;
-import com.vk.api.sdk.objects.users.UserXtrCounters;
-import com.vk.api.sdk.objects.wall.responses.GetRepostsResponse;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import com.vk.api.sdk.objects.wall.responses.PostResponse;
-import com.vk.api.sdk.queries.likes.LikesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vkanalizer.vk.config.properties.VkClientProperties;
@@ -130,26 +126,6 @@ public class VkClientInstanceImpl implements VkClientInstance {
                 .userId(vkClientProperties.getUser().getId())
                 .message(message)
                 .attachment("wall-" + vkClientProperties.getGroup().getId() + "_" + id)
-                .execute();
-    }
-
-    public GetListExtendedResponse getLikes(Integer id) throws ClientException, ApiException {
-        return vkApiClient.likes().getListExtended((UserActor) vkClientProperties.getUser().getActor(), LikesType.POST)
-                .ownerId(-vkClientProperties.getGroup().getId())
-                .itemId(id)
-                .execute();
-    }
-
-    public GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException {
-        return vkApiClient.wall().getReposts((UserActor) vkClientProperties.getUser().getActor())
-                .ownerId(-vkClientProperties.getGroup().getId())
-                .postId(id)
-                .execute();
-    }
-
-    public List<UserXtrCounters> getUsers(List<String> ids) throws ClientException, ApiException {
-        return vkApiClient.users().get((UserActor) vkClientProperties.getUser().getActor())
-                .userIds(ids)
                 .execute();
     }
 }
