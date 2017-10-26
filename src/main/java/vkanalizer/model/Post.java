@@ -57,6 +57,7 @@ public class Post {
         this.text = text;
         this.likes = likes;
         this.reposts = reposts;
+        this.comments = comments;
     }
 
 

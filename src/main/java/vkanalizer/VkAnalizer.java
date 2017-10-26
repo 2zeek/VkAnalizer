@@ -46,7 +46,7 @@ public class VkAnalizer {
     }
 
     @Scheduled(fixedDelay = 1800000)
-    void doStuff() throws ClientException, ApiException {
+    void doStuff() throws ClientException, ApiException, InterruptedException {
         GetResponse response = vkClientInstance.getWall(-152033291);
         Post post;
         Post inBase;
@@ -58,12 +58,15 @@ public class VkAnalizer {
                 postDao.insert(post);
                 vkClientInstance.sendMessage(post.getId(), "Новая запись в сообществе");
             } else if (!inBase.equals(post)) {
+
+                Thread.sleep(1000);
+
                 postDao.update(post);
                 String message = "";
                 if (post.getLikes() - inBase.getLikes() != 0)
                     message += "Лайков было/стало: " + inBase.getLikes() + "/" + post.getLikes() + "\n";
                 if (post.getReposts() - inBase.getReposts() != 0)
-                    message += "Репостов было/стало: " + inBase.getReposts() + "/" + post.getReposts();
+                    message += "Репостов было/стало: " + inBase.getReposts() + "/" + post.getReposts() + "\n";
                 if (post.getComments() - inBase.getComments() !=0)
                     message += "Комментариев было/стало:" + inBase.getComments() + "/" + post.getComments();
                 log.info(post.getId() + ": " + message);
