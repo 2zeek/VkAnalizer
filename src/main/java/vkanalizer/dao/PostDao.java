@@ -20,7 +20,7 @@ public class PostDao {
         Post post = null;
         try {
             post = jdbcTemplate.queryForObject(
-                    "SELECT id, text, likes, reposts,comments FROM posts where id = ?",
+                    "SELECT id, text, likes, reposts, comments FROM posts where id = ?",
                     (rs, rowNum) -> {
                         final Post post1 = new Post(
                                 rs.getInt("id"),
@@ -35,7 +35,7 @@ public class PostDao {
     }
 
     public void insert(Post post) {
-        jdbcTemplate.update("insert into posts (id, text, likes, reposts, comments) values (?, ?, ?, ?)",
+        jdbcTemplate.update("insert into posts (id, text, likes, reposts, comments) values (?, ?, ?, ?, ?)",
                 post.getId(), post.getText(), post.getLikes(), post.getReposts(), post.getComments());
     }
 

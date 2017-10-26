@@ -66,9 +66,9 @@ public class Post {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Post that = (Post) obj;
-        return Objects.equals(this.likes, that.likes) &&
-                Objects.equals(this.reposts, that.reposts) &&
-                Objects.equals(this.comments, that.comments);
+        return Objects.equals(likes, that.likes) &&
+                Objects.equals(reposts, that.reposts) &&
+                Objects.equals(comments, that.comments);
     }
 
     @Override
@@ -79,13 +79,12 @@ public class Post {
     }
 
     public static Post wallpostToPost (WallpostFull wallpostFull) {
-        Post post = new Post(
+        return new Post(
                 wallpostFull.getId(),
                 wallpostFull.getText(),
                 wallpostFull.getLikes().getCount(),
                 wallpostFull.getReposts().getCount(),
                 wallpostFull.getComments().getCount()
         );
-        return post;
     }
 }

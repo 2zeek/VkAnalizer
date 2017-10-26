@@ -16,10 +16,5 @@ import java.io.File;
 public interface VkClientInstance {
 
     GetResponse getWall() throws ClientException, ApiException;
-    PostResponse setPhotoOnTheWall(File file) throws ClientException, ApiException;
-    SaveOwnerPhotoResponse setAvatar(File file) throws ClientException, ApiException;
-    SaveOwnerPhotoResponse setGroupAvatar(File file) throws ClientException, ApiException;
-    PostResponse postInGroup(Photo photo) throws ClientException, ApiException;
-    PhotosSaveOwnerCoverPhotoResponse setGroupCover(File file) throws ClientException, ApiException;
     void sendMessage(Integer id, String message) throws ClientException, ApiException;
 }

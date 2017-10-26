@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
+import java.util.Objects;
+
 import static vkanalizer.model.Post.wallpostToPost;
 
 
@@ -63,14 +65,15 @@ public class VkAnalizer {
 
                 postDao.update(post);
                 String message = "";
-                if (post.getLikes() - inBase.getLikes() != 0)
+                if (!Objects.equals(post.getLikes(), inBase.getLikes()))
                     message += "Лайков было/стало: " + inBase.getLikes() + "/" + post.getLikes() + "\n";
-                if (post.getReposts() - inBase.getReposts() != 0)
+                if (!Objects.equals(post.getReposts(), inBase.getReposts()))
                     message += "Репостов было/стало: " + inBase.getReposts() + "/" + post.getReposts() + "\n";
-                if (post.getComments() - inBase.getComments() !=0)
+                if (!Objects.equals(post.getComments(), inBase.getComments()))
                     message += "Комментариев было/стало:" + inBase.getComments() + "/" + post.getComments();
                 log.info(post.getId() + ": " + message);
                 vkClientInstance.sendMessage(post.getId(), message);
+                log.info(wallpostFull.getReposts().getUserReposted().toString());
             }
 
         }
