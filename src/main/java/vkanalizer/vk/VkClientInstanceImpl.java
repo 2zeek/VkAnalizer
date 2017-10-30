@@ -7,7 +7,9 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
+import com.vk.api.sdk.objects.groups.responses.GetMembersFieldsResponse;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
+import com.vk.api.sdk.queries.users.UserField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vkanalizer.vk.config.properties.VkClientProperties;
@@ -45,11 +47,26 @@ public class VkClientInstanceImpl implements VkClientInstance {
                 .execute();
     }
 
-    public void sendMessage(Integer id, String message) throws ClientException, ApiException {
-        vkApiClient.messages().send((GroupActor) vkClientProperties.getGroup().getActor())
-                .userId(vkClientProperties.getUser().getId())
-                .message(message)
-                .attachment("wall-" + vkClientProperties.getGroup().getId() + "_" + id)
+    public void sendPostMessage(Integer id, String message) throws ClientException, ApiException {
+        if (!vkClientProperties.isTestmode())
+            vkApiClient.messages().send((GroupActor) vkClientProperties.getGroup().getActor())
+                    .userId(vkClientProperties.getUser().getId())
+                    .message(message)
+                    .attachment("wall-" + vkClientProperties.getGroup().getId() + "_" + id)
+                    .execute();
+    }
+
+    public void sendMemberMessage(String message) throws ClientException, ApiException {
+        if (!vkClientProperties.isTestmode())
+            vkApiClient.messages().send((GroupActor) vkClientProperties.getGroup().getActor())
+                    .userId(vkClientProperties.getUser().getId())
+                    .message(message)
+                    .execute();
+    }
+
+    public GetMembersFieldsResponse getMembers() throws ClientException, ApiException {
+        return vkApiClient.groups().getMembers((GroupActor) vkClientProperties.getGroup().getActor(), UserField.LISTS)
+                .groupId(vkClientProperties.getGroup().getId().toString())
                 .execute();
     }
 }

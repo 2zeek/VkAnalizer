@@ -92,6 +92,7 @@ public class VkClientProperties {
 
     private User user;
     private Group group;
+    private boolean testmode;
 
     public User getUser() {
         return user;
@@ -107,5 +108,13 @@ public class VkClientProperties {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public boolean isTestmode() {
+        return testmode;
+    }
+
+    public void setTestmode(boolean testmode) {
+        this.testmode = testmode;
     }
 }
