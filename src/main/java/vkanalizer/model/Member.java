@@ -52,7 +52,7 @@ public class Member {
 
     @Override
     public String toString() {
-        return firstName + " " + lastName;
+        return firstName + " " + lastName + " (" + "vk.com/id" + id + ")";
     }
 
     public static List<Member> parseToMember(List<UserXtrRole> list) {

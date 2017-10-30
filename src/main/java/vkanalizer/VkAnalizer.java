@@ -53,7 +53,7 @@ public class VkAnalizer {
     MemberDao memberDao;
 
     public static void main(String... args) {
-        ApplicationContext context = Application.start(Application.class, args);
+        ApplicationContext context = Application.start(VkAnalizer.class, args);
     }
 
     @Scheduled(fixedDelay = 1800000)
