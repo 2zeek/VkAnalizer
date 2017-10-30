@@ -7,17 +7,10 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
-import com.vk.api.sdk.objects.photos.Photo;
-import com.vk.api.sdk.objects.photos.PhotoUpload;
-import com.vk.api.sdk.objects.photos.responses.*;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
-import com.vk.api.sdk.objects.wall.responses.PostResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vkanalizer.vk.config.properties.VkClientProperties;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Created by Nikolay V. Petrov on 28.08.2017.
