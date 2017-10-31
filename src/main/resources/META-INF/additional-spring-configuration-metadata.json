@@ -3,7 +3,6 @@
     {
       "name": "config.directory",
       "type": "java.lang.String",
-      "description": "Directory with configs, obviously."
-    }
-  ]
+      "description": "Description for config.directory."
+  }]
 }

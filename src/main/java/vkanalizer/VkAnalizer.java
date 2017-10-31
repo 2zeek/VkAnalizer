@@ -58,6 +58,13 @@ public class VkAnalizer {
 
     @Scheduled(fixedDelay = 1800000)
     void doStuff() throws ClientException, ApiException, InterruptedException {
+
+        checkLikesAndReposts();
+        checkMembers();
+
+    }
+
+    void checkLikesAndReposts() throws ClientException, ApiException, InterruptedException {
         GetResponse response = vkClientInstance.getWall();
         Post post;
         Post inBase;
@@ -98,7 +105,9 @@ public class VkAnalizer {
                 vkClientInstance.sendPostMessage(post.getId(), postMessage.toString());
             }
         }
+    }
 
+    void checkMembers() throws ClientException, ApiException {
         StringBuilder membersMessage = new StringBuilder();
 
         List<Member> membersList = parseToMember(vkClientInstance.getMembers().getItems());
@@ -115,7 +124,9 @@ public class VkAnalizer {
         if (newUsers.size() != 0) {
             membersMessage.append("Новые пользователи:\n");
             for (Member mem : newUsers)
-                membersMessage.append(mem.toString()).append("\n");
+                membersMessage
+                        .append(mem.toString())
+                        .append("\n");
         }
 
         List<Member> leaved = new ArrayList<>();
@@ -130,7 +141,9 @@ public class VkAnalizer {
         if (leaved.size() != 0) {
             membersMessage.append("Ушли пользователи:\n");
             for (Member mem : leaved) {
-                membersMessage.append(mem.toString()).append("\n");
+                membersMessage
+                        .append(mem.toString())
+                        .append("\n");
             }
         }
 

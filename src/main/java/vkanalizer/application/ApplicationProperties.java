@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import javax.annotation.PostConstruct;
 
 @PropertySource(value= "file:${config.directory}/app.properties")
-@ConfigurationProperties(prefix = "vkanalizer/application")
+@ConfigurationProperties(prefix = "application")
 @Configuration
 public class ApplicationProperties {
 
