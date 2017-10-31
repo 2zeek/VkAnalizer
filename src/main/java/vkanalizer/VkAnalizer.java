@@ -164,7 +164,11 @@ public class VkAnalizer {
 
     void getLikes() throws ClientException, ApiException, InterruptedException {
         GetResponse response = vkClientInstance.getWall();
+        Post post;
+        Post inBase;
         for (WallpostFull wallpostFull : response.getItems()) {
+            post = wallpostToPost(wallpostFull);
+            inBase = postDao.findById(post.getId());
 
             Thread.sleep(1000);
 
@@ -176,61 +180,72 @@ public class VkAnalizer {
             Like like = new Like(wallpostFull.getId(), list);
             Like likeInBase = likeDao.findById(like.getId());
 
-            if (likeInBase == null) {
-                String likesMessage = "Новый лайк: запись id = " +
-                        wallpostFull.getId() + ", лайки = " + like.getLikes();
-                log.info(likesMessage);
+            if (inBase == null) {
+                String message = "Новая запись в сообществе: id=" + post.getId() +
+                        ", лайки = " + like.getLikes();
+                log.info(message);
+                postDao.insert(post);
                 likeDao.insert(like);
-            } else if (!like.equals(likeInBase)) {
-                StringBuilder likesMessage = new StringBuilder();
+                vkClientInstance.sendPostMessage(post.getId(), message);
+            } else {
 
-                List<Integer> newLikesId = new ArrayList<>();
-                for (Integer id : like.getLikes()) {
-                    if (!likeInBase.getLikes().contains(id)) {
-                        newLikesId.add(id);
+                if (!like.equals(likeInBase)) {
+                    StringBuilder likesMessage = new StringBuilder();
+
+                    List<Integer> newLikesId = new ArrayList<>();
+                    for (Integer id : like.getLikes()) {
+                        if (!likeInBase.getLikes().contains(id)) {
+                            newLikesId.add(id);
+                        }
                     }
-                }
 
-                if (newLikesId.size() != 0) {
+                    if (newLikesId.size() != 0) {
 
-                    Thread.sleep(1000);
+                        Thread.sleep(1000);
+
+                        likesMessage
+                                .append("Новые лайки:")
+                                .append("\n");
+                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikesId));
+                        for (Member member : members) {
+                            likesMessage
+                                    .append(member.toString())
+                                    .append("\n");
+                        }
+                    }
+
+                    List<Integer> lostLikes = new ArrayList<>();
+                    for (Integer id : likeInBase.getLikes()) {
+                        if (!like.getLikes().contains(id)) {
+                            lostLikes.add(id);
+                        }
+                    }
+
+                    if (lostLikes.size() != 0) {
+
+                        Thread.sleep(1000);
+
+                        likesMessage
+                                .append("Снятые лайки:")
+                                .append("\n");
+                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikesId));
+                        for (Member member : members) {
+                            likesMessage
+                                    .append(member.toString())
+                                    .append("\n");
+                        }
+                    }
 
                     likesMessage
-                            .append("Новые лайки:")
-                            .append("\n");
-                    List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikesId));
-                    for (Member member : members) {
-                        likesMessage
-                                .append(member.toString())
-                                .append("\n");
-                    }
+                            .append("Лайков было/стало: ")
+                            .append(likeInBase.getLikes().size())
+                            .append("/")
+                            .append(like.getLikes().size());
+
+                    log.info(likesMessage.toString());
+                    vkClientInstance.sendPostMessage(wallpostFull.getId(), likesMessage.toString());
+                    likeDao.update(like);
                 }
-
-                List<Integer> lostLikes = new ArrayList<>();
-                for (Integer id : likeInBase.getLikes()) {
-                    if (!like.getLikes().contains(id)) {
-                        lostLikes.add(id);
-                    }
-                }
-
-                if (lostLikes.size() != 0) {
-
-                    Thread.sleep(1000);
-
-                    likesMessage
-                            .append("Снятые лайки:")
-                            .append("\n");
-                    List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikesId));
-                    for (Member member : members) {
-                        likesMessage
-                                .append(member.toString())
-                                .append("\n");
-                    }
-                }
-
-                log.info(likesMessage.toString());
-                vkClientInstance.sendPostMessage(wallpostFull.getId(), likesMessage.toString());
-                likeDao.update(like);
             }
         }
     }

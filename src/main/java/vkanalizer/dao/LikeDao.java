@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import vkanalizer.model.Like;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -47,8 +48,11 @@ public class LikeDao {
 
     private List<Integer> stringToList(String string) {
         List<Integer> resultList = new ArrayList<>();
-        if (Objects.equals(string, null))
-            resultList = Collections.singletonList(Integer.parseInt(Arrays.toString(string.split("\\s*,\\s*"))));
+        Pattern pattern = Pattern.compile(",");
+        if (!string.isEmpty())
+            resultList =  pattern.splitAsStream(string)
+                    .map(Integer::valueOf)
+                    .collect(Collectors.toList());
         return resultList;
     }
 
