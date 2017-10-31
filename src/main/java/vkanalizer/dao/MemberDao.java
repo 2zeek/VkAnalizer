@@ -22,13 +22,11 @@ public class MemberDao {
         try {
             member = jdbcTemplate.queryForObject(
                     "SELECT id, first_name, last_name FROM members where id = ?",
-                    (rs, rowNum) -> {
-                        final Member member1 = new Member(
-                                rs.getInt("id"),
-                                rs.getString("first_name"),
-                                rs.getString("last_name"));
-                        return member1;
-                    }, id);
+                    (rs, rowNum) -> new Member(
+                            rs.getInt("id"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name")), 
+                    id);
         } catch (EmptyResultDataAccessException ignored) {}
         return member;
     }

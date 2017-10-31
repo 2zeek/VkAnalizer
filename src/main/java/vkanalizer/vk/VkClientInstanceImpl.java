@@ -8,11 +8,17 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.groups.responses.GetMembersFieldsResponse;
+import com.vk.api.sdk.objects.likes.responses.GetListExtendedResponse;
+import com.vk.api.sdk.objects.users.UserXtrCounters;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
+import com.vk.api.sdk.queries.likes.LikesType;
 import com.vk.api.sdk.queries.users.UserField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vkanalizer.vk.config.properties.VkClientProperties;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nikolay V. Petrov on 28.08.2017.
@@ -44,6 +50,22 @@ public class VkClientInstanceImpl implements VkClientInstance {
                 .ownerId(-vkClientProperties.getGroup().getId())
                 .count(100)
                 .offset(0)
+                .execute();
+    }
+
+    public GetListExtendedResponse getLikes(Integer id) throws ClientException, ApiException {
+        return vkApiClient.likes().getListExtended((UserActor) vkClientProperties.getUser().getActor(), LikesType.POST)
+                .ownerId(-vkClientProperties.getGroup().getId())
+                .itemId(id)
+                .execute();
+    }
+
+    public List<UserXtrCounters> getUsersInfo(List<Integer> list) throws ClientException, ApiException {
+        List<String> stringList = new ArrayList<>();
+        for (Integer integer : list)
+            stringList.add(String.valueOf(integer));
+        return vkApiClient.users().get((UserActor) vkClientProperties.getUser().getActor())
+                .userIds(stringList)
                 .execute();
     }
 

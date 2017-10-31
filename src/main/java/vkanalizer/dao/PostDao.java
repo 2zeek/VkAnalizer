@@ -21,15 +21,12 @@ public class PostDao {
         try {
             post = jdbcTemplate.queryForObject(
                     "SELECT id, text, likes, reposts, comments FROM posts where id = ?",
-                    (rs, rowNum) -> {
-                        final Post post1 = new Post(
-                                rs.getInt("id"),
-                                rs.getString("text"),
-                                rs.getInt("likes"),
-                                rs.getInt("reposts"),
-                                rs.getInt("comments"));
-                        return post1;
-                    }, id);
+                    (rs, rowNum) -> new Post(
+                            rs.getInt("id"),
+                            rs.getString("text"),
+                            rs.getInt("likes"),
+                            rs.getInt("reposts"),
+                            rs.getInt("comments")), id);
         } catch (EmptyResultDataAccessException ignored) {}
         return post;
     }
