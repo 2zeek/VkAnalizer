@@ -79,7 +79,8 @@ public class VkAnalizer {
 
     }
 
-    void checkMembers() throws ClientException, ApiException {
+    private void checkMembers() throws ClientException, ApiException {
+        log.info("Начинаем проверку новых членов группы");
         StringBuilder membersMessage = new StringBuilder();
 
         List<Member> membersList = parseUserXtrRoleToMember(vkClientInstance.getMembers().getItems());
@@ -119,13 +120,14 @@ public class VkAnalizer {
             }
         }
 
-        if (membersMessage.length() != 0) {
+        if (!membersMessage.toString().isEmpty()) {
             log.info(membersMessage.toString());
             vkClientInstance.sendMemberMessage(membersMessage.toString());
         }
     }
 
-    void getLikes() throws ClientException, ApiException, InterruptedException {
+    private void getLikes() throws ClientException, ApiException, InterruptedException {
+        log.info("Начинаем проверку записей на стене");
         GetResponse response = vkClientInstance.getWall();
         Post post;
         Post inBase;
@@ -154,14 +156,35 @@ public class VkAnalizer {
             StringBuilder message = new StringBuilder();
 
             if (inBase == null) {
-                String newMessage = "Новая запись в сообществе: id=" + post.getId() +
-                        ", лайки = " + like.getLikes() +
-                        ", репосты = " + repost.getReposts();
-                log.info(newMessage);
+                message
+                        .append("Новая запись в сообществе\n");
+
+                if (!like.getLikes().isEmpty()) {
+                    message
+                            .append("Лайки:\n");
+                    for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(like.getLikes()))) {
+                        message
+                                .append(member.toString())
+                                .append("\n");
+                    }
+                }
+
+                if (!repost.getReposts().isEmpty()) {
+                    message
+                            .append("Репосты");
+                    for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(repost.getReposts()))) {
+                        message
+                                .append(member.toString())
+                                .append("\n");
+                    }
+                }
+
+                log.info(message.toString());
                 postDao.insert(post);
                 likeDao.insert(like);
                 repostDao.insert(repost);
-                vkClientInstance.sendPostMessage(post.getId(), newMessage);
+                vkClientInstance.sendPostMessage(post.getId(), message.toString());
+
             } else {
 
                 postDao.update(post);
@@ -182,8 +205,7 @@ public class VkAnalizer {
                         message
                                 .append("Новые лайки:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikes));
-                        for (Member member : members) {
+                        for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikes))) {
                             message
                                     .append(member.toString())
                                     .append("\n");
@@ -204,8 +226,7 @@ public class VkAnalizer {
                         message
                                 .append("Снятые лайки:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostLikes));
-                        for (Member member : members) {
+                        for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostLikes))) {
                             message
                                     .append(member.toString())
                                     .append("\n");
@@ -239,8 +260,7 @@ public class VkAnalizer {
                         message
                                 .append("Новые репосты:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newReposts));
-                        for (Member member : members) {
+                        for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newReposts))) {
                             message
                                     .append(member.toString())
                                     .append("\n");
@@ -261,8 +281,7 @@ public class VkAnalizer {
                         message
                                 .append("Снятые репосты:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostReposts));
-                        for (Member member : members) {
+                        for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostReposts))) {
                             message
                                     .append(member.toString())
                                     .append("\n");
