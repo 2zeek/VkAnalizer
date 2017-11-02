@@ -1,6 +1,7 @@
 package vkanalizer.model;
 
 import com.vk.api.sdk.objects.groups.UserXtrRole;
+import com.vk.api.sdk.objects.users.User;
 import com.vk.api.sdk.objects.users.UserXtrCounters;
 
 import java.util.ArrayList;
@@ -66,6 +67,13 @@ public class Member {
     public static List<Member> parseUserXtrCountersToMember(List<UserXtrCounters> list) {
         List<Member> membersList = new ArrayList<>();
         for (UserXtrCounters user : list)
+            membersList.add(new Member(user.getId(), user.getFirstName(), user.getLastName()));
+        return membersList;
+    }
+
+    public static List<Member> parseUserRoMember(List<User> usersList) {
+        List<Member> membersList = new ArrayList<>();
+        for (User user : usersList)
             membersList.add(new Member(user.getId(), user.getFirstName(), user.getLastName()));
         return membersList;
     }

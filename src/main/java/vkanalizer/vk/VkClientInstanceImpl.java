@@ -10,6 +10,7 @@ import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.groups.responses.GetMembersFieldsResponse;
 import com.vk.api.sdk.objects.likes.responses.GetListExtendedResponse;
 import com.vk.api.sdk.objects.users.UserXtrCounters;
+import com.vk.api.sdk.objects.wall.responses.GetRepostsResponse;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import com.vk.api.sdk.queries.likes.LikesType;
 import com.vk.api.sdk.queries.users.UserField;
@@ -57,6 +58,13 @@ public class VkClientInstanceImpl implements VkClientInstance {
         return vkApiClient.likes().getListExtended((UserActor) vkClientProperties.getUser().getActor(), LikesType.POST)
                 .ownerId(-vkClientProperties.getGroup().getId())
                 .itemId(id)
+                .execute();
+    }
+
+    public GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException {
+        return vkApiClient.wall().getReposts((UserActor) vkClientProperties.getUser().getActor())
+                .ownerId(-vkClientProperties.getGroup().getId())
+                .postId(id)
                 .execute();
     }
 
