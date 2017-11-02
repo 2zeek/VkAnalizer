@@ -15,11 +15,11 @@ import java.util.List;
  */
 public interface VkClientInstance {
 
-    GetResponse getWall() throws ClientException, ApiException;
-    GetListExtendedResponse getLikes(Integer id) throws ClientException, ApiException;
-    GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException;
-    List<UserXtrCounters> getUsersInfo(List<Integer> list) throws ClientException, ApiException;
-    void sendPostMessage(Integer id, String message) throws ClientException, ApiException;
-    void sendMemberMessage(String message) throws ClientException, ApiException;
-    GetMembersFieldsResponse getMembers() throws ClientException, ApiException;
+    GetResponse getWall() throws ClientException, ApiException, InterruptedException;
+    GetListExtendedResponse getLikes(Integer id) throws ClientException, ApiException, InterruptedException;
+    GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException, InterruptedException;
+    List<UserXtrCounters> getUsersInfo(List<Integer> list) throws ClientException, ApiException, InterruptedException;
+    void sendPostMessage(Integer id, String message) throws ClientException, ApiException, InterruptedException;
+    void sendMemberMessage(String message) throws ClientException, ApiException, InterruptedException;
+    GetMembersFieldsResponse getMembers() throws ClientException, ApiException, InterruptedException;
 }

@@ -46,7 +46,8 @@ public class VkClientInstanceImpl implements VkClientInstance {
         return new VkClientInstanceImpl(vkClientProperties);
     }
 
-    public GetResponse getWall() throws ClientException, ApiException {
+    public GetResponse getWall() throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         return vkApiClient.wall().get((UserActor) vkClientProperties.getUser().getActor())
                 .ownerId(-vkClientProperties.getGroup().getId())
                 .count(100)
@@ -54,21 +55,24 @@ public class VkClientInstanceImpl implements VkClientInstance {
                 .execute();
     }
 
-    public GetListExtendedResponse getLikes(Integer id) throws ClientException, ApiException {
+    public GetListExtendedResponse getLikes(Integer id) throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         return vkApiClient.likes().getListExtended((UserActor) vkClientProperties.getUser().getActor(), LikesType.POST)
                 .ownerId(-vkClientProperties.getGroup().getId())
                 .itemId(id)
                 .execute();
     }
 
-    public GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException {
+    public GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         return vkApiClient.wall().getReposts((UserActor) vkClientProperties.getUser().getActor())
                 .ownerId(-vkClientProperties.getGroup().getId())
                 .postId(id)
                 .execute();
     }
 
-    public List<UserXtrCounters> getUsersInfo(List<Integer> list) throws ClientException, ApiException {
+    public List<UserXtrCounters> getUsersInfo(List<Integer> list) throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         List<String> stringList = new ArrayList<>();
         for (Integer integer : list)
             stringList.add(String.valueOf(integer));
@@ -77,7 +81,8 @@ public class VkClientInstanceImpl implements VkClientInstance {
                 .execute();
     }
 
-    public void sendPostMessage(Integer id, String message) throws ClientException, ApiException {
+    public void sendPostMessage(Integer id, String message) throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         if (!vkClientProperties.isTestmode())
             vkApiClient.messages().send((GroupActor) vkClientProperties.getGroup().getActor())
                     .userId(vkClientProperties.getUser().getId())
@@ -86,7 +91,8 @@ public class VkClientInstanceImpl implements VkClientInstance {
                     .execute();
     }
 
-    public void sendMemberMessage(String message) throws ClientException, ApiException {
+    public void sendMemberMessage(String message) throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         if (!vkClientProperties.isTestmode())
             vkApiClient.messages().send((GroupActor) vkClientProperties.getGroup().getActor())
                     .userId(vkClientProperties.getUser().getId())
@@ -94,7 +100,8 @@ public class VkClientInstanceImpl implements VkClientInstance {
                     .execute();
     }
 
-    public GetMembersFieldsResponse getMembers() throws ClientException, ApiException {
+    public GetMembersFieldsResponse getMembers() throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
         return vkApiClient.groups().getMembers((GroupActor) vkClientProperties.getGroup().getActor(), UserField.LISTS)
                 .groupId(vkClientProperties.getGroup().getId().toString())
                 .execute();

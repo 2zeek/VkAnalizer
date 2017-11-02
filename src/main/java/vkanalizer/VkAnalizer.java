@@ -79,7 +79,7 @@ public class VkAnalizer {
 
     }
 
-    private void checkMembers() throws ClientException, ApiException {
+    private void checkMembers() throws ClientException, ApiException, InterruptedException {
         log.info("Начинаем проверку новых членов группы");
         StringBuilder membersMessage = new StringBuilder();
 
@@ -128,21 +128,20 @@ public class VkAnalizer {
 
     private void getLikes() throws ClientException, ApiException, InterruptedException {
         log.info("Начинаем проверку записей на стене");
-        GetResponse response = vkClientInstance.getWall();
         Post post;
-        Post inBase;
-        for (WallpostFull wallpostFull : response.getItems()) {
+        Post postInBase;
+        Repost repost;
+        Repost repostInBase;
+        for (WallpostFull wallpostFull : vkClientInstance.getWall().getItems()) {
             post = wallpostToPost(wallpostFull);
-            inBase = postDao.findById(post.getId());
+            postInBase = postDao.findById(post.getId());
 
-            Thread.sleep(1000);
-
-            List<Integer> list = new ArrayList<>();
+            List<Integer> likesList = new ArrayList<>();
             for (UserMin user : vkClientInstance.getLikes(wallpostFull.getId()).getItems()) {
-                list.add(user.getId());
+                likesList.add(user.getId());
             }
 
-            Like like = new Like(wallpostFull.getId(), list);
+            Like like = new Like(wallpostFull.getId(), likesList);
             Like likeInBase = likeDao.findById(like.getId());
 
             List<Integer> repostsList = new ArrayList<>();
@@ -150,12 +149,12 @@ public class VkAnalizer {
                 repostsList.add(user.getId());
             }
 
-            Repost repost = new Repost(wallpostFull.getId(), repostsList);
-            Repost repostInBase = repostDao.findById(repost.getId());
+            repost = new Repost(wallpostFull.getId(), repostsList);
+            repostInBase = repostDao.findById(repost.getId());
 
             StringBuilder message = new StringBuilder();
 
-            if (inBase == null) {
+            if (postInBase == null) {
                 message
                         .append("Новая запись в сообществе\n");
 
@@ -200,8 +199,6 @@ public class VkAnalizer {
 
                     if (newLikes.size() != 0) {
 
-                        Thread.sleep(1000);
-
                         message
                                 .append("Новые лайки:")
                                 .append("\n");
@@ -220,8 +217,6 @@ public class VkAnalizer {
                     }
 
                     if (lostLikes.size() != 0) {
-
-                        Thread.sleep(1000);
 
                         message
                                 .append("Снятые лайки:")
@@ -245,6 +240,8 @@ public class VkAnalizer {
 
 
                 if (!repost.equals(repostInBase)) {
+                    log.info("New: " + repost.toString());
+                    log.info("In base: " + repostInBase.toString());
 
                     List<Integer> newReposts = new ArrayList<>();
                     for (Integer id : repost.getReposts()) {
@@ -253,9 +250,7 @@ public class VkAnalizer {
                         }
                     }
 
-                    if (newReposts.size() != 0) {
-
-                        Thread.sleep(1000);
+                    if (!newReposts.isEmpty()) {
 
                         message
                                 .append("Новые репосты:")
@@ -274,9 +269,7 @@ public class VkAnalizer {
                         }
                     }
 
-                    if (lostReposts.size() != 0) {
-
-                        Thread.sleep(1000);
+                    if (!lostReposts.isEmpty()) {
 
                         message
                                 .append("Снятые репосты:")
@@ -298,10 +291,10 @@ public class VkAnalizer {
                     repostDao.update(repost);
                 }
 
-                if (!Objects.equals(post.getComments(), inBase.getComments()))
+                if (!Objects.equals(post.getComments(), postInBase.getComments()))
                     message
                             .append("Комментариев было/стало:")
-                            .append(inBase.getComments())
+                            .append(postInBase.getComments())
                             .append("/")
                             .append(post.getComments());
             }
