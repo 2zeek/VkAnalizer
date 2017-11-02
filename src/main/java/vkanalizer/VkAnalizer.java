@@ -145,7 +145,10 @@ public class VkAnalizer {
             Like likeInBase = likeDao.findById(like.getId());
 
             List<Integer> repostsList = new ArrayList<>();
+
+            log.info("Post id = " + wallpostFull.getId());
             for (User user : vkClientInstance.getReposts(wallpostFull.getId()).getProfiles()) {
+                log.info("user = " + user.getFirstName() + " " + user.getLastName());
                 repostsList.add(user.getId());
             }
 
@@ -170,7 +173,7 @@ public class VkAnalizer {
 
                 if (!repost.getReposts().isEmpty()) {
                     message
-                            .append("Репосты");
+                            .append("Репосты\n");
                     for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(repost.getReposts()))) {
                         message
                                 .append(member.toString())
@@ -178,7 +181,6 @@ public class VkAnalizer {
                     }
                 }
 
-                log.info(message.toString());
                 postDao.insert(post);
                 likeDao.insert(like);
                 repostDao.insert(repost);
