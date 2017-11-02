@@ -73,54 +73,10 @@ public class VkAnalizer {
 
     @Scheduled(fixedDelay = 1800000)
     void doStuff() throws ClientException, ApiException, InterruptedException {
-/*
-        checkLikesAndReposts();
-        checkMembers();*/
+
+        checkMembers();
         getLikes();
 
-    }
-
-    void checkLikesAndReposts() throws ClientException, ApiException, InterruptedException {
-        GetResponse response = vkClientInstance.getWall();
-        Post post;
-        Post inBase;
-        for (WallpostFull wallpostFull : response.getItems()) {
-            post = wallpostToPost(wallpostFull);
-            inBase = postDao.findById(post.getId());
-            if (inBase == null) {
-                log.info("Новая запись в сообществе: id=" + post.getId());
-                postDao.insert(post);
-                vkClientInstance.sendPostMessage(post.getId(), "Новая запись в сообществе");
-            } else if (!inBase.equals(post)) {
-
-                Thread.sleep(1000);
-
-                postDao.update(post);
-                StringBuilder postMessage = new StringBuilder();
-                if (!Objects.equals(post.getLikes(), inBase.getLikes()))
-                    postMessage
-                            .append("Лайков было/стало: ")
-                            .append(inBase.getLikes())
-                            .append("/")
-                            .append(post.getLikes())
-                            .append("\n");
-                if (!Objects.equals(post.getReposts(), inBase.getReposts()))
-                    postMessage
-                            .append("Репостов было/стало: ")
-                            .append(inBase.getReposts())
-                            .append("/").
-                            append(post.getReposts())
-                            .append("\n");
-                if (!Objects.equals(post.getComments(), inBase.getComments()))
-                    postMessage
-                            .append("Комментариев было/стало:")
-                            .append(inBase.getComments())
-                            .append("/")
-                            .append(post.getComments());
-                log.info(post.getId() + ": " + postMessage.toString());
-                vkClientInstance.sendPostMessage(post.getId(), postMessage.toString());
-            }
-        }
     }
 
     void checkMembers() throws ClientException, ApiException {
@@ -212,21 +168,21 @@ public class VkAnalizer {
 
                 if (!like.equals(likeInBase)) {
 
-                    List<Integer> newLikesId = new ArrayList<>();
+                    List<Integer> newLikes = new ArrayList<>();
                     for (Integer id : like.getLikes()) {
                         if (!likeInBase.getLikes().contains(id)) {
-                            newLikesId.add(id);
+                            newLikes.add(id);
                         }
                     }
 
-                    if (newLikesId.size() != 0) {
+                    if (newLikes.size() != 0) {
 
                         Thread.sleep(1000);
 
                         message
                                 .append("Новые лайки:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikesId));
+                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikes));
                         for (Member member : members) {
                             message
                                     .append(member.toString())
@@ -248,7 +204,7 @@ public class VkAnalizer {
                         message
                                 .append("Снятые лайки:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newLikesId));
+                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostLikes));
                         for (Member member : members) {
                             message
                                     .append(member.toString())
@@ -269,21 +225,21 @@ public class VkAnalizer {
 
                 if (!repost.equals(repostInBase)) {
 
-                    List<Integer> newRepost = new ArrayList<>();
+                    List<Integer> newReposts = new ArrayList<>();
                     for (Integer id : repost.getReposts()) {
                         if (!repostInBase.getReposts().contains(id)) {
-                            newRepost.add(id);
+                            newReposts.add(id);
                         }
                     }
 
-                    if (newRepost.size() != 0) {
+                    if (newReposts.size() != 0) {
 
                         Thread.sleep(1000);
 
                         message
                                 .append("Новые репосты:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newRepost));
+                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newReposts));
                         for (Member member : members) {
                             message
                                     .append(member.toString())
@@ -305,7 +261,7 @@ public class VkAnalizer {
                         message
                                 .append("Снятые репосты:")
                                 .append("\n");
-                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(newRepost));
+                        List<Member> members = parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostReposts));
                         for (Member member : members) {
                             message
                                     .append(member.toString())
@@ -320,27 +276,21 @@ public class VkAnalizer {
                             .append(repost.getReposts().size())
                             .append("\n");
 
-                    likeDao.update(like);
+                    repostDao.update(repost);
                 }
+
+                if (!Objects.equals(post.getComments(), inBase.getComments()))
+                    message
+                            .append("Комментариев было/стало:")
+                            .append(inBase.getComments())
+                            .append("/")
+                            .append(post.getComments());
             }
 
-            if (!Objects.equals(post.getComments(), inBase.getComments()))
-                message
-                        .append("Комментариев было/стало:")
-                        .append(inBase.getComments())
-                        .append("/")
-                        .append(post.getComments());
-            log.info(post.getId() + ": " + message.toString());
-
-            if (message.length() != 0) {
-                log.info(message.toString());
+            if (!message.toString().isEmpty()) {
+                log.info(wallpostFull.getId()+ ":" + message.toString());
                 vkClientInstance.sendPostMessage(wallpostFull.getId(), message.toString());
             }
         }
-    }
-
-
-    private List<Member> getUsersFromDb(List<Integer> list) throws ClientException, ApiException {
-        return parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(list));
     }
 }

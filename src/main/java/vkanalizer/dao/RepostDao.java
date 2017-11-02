@@ -28,7 +28,7 @@ public class RepostDao {
                     "SELECT id, reposts_list FROM reposts WHERE id = ?",
                     (rs, rowNum) -> new Repost(
                             rs.getInt("id"),
-                            stringToList(rs.getString("repost_list"))), id);
+                            stringToList(rs.getString("reposts_list"))), id);
         } catch (EmptyResultDataAccessException ignored) {}
         return repost;
     }
