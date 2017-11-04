@@ -6,10 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import vkanalizer.model.Repost;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import static vkanalizer.utils.Utils.listToString;
+import static vkanalizer.utils.Utils.stringToList;
 
 @Component
 public class RepostDao {
@@ -43,18 +41,4 @@ public class RepostDao {
                 listToString(repost.getReposts()), repost.getId());
     }
 
-    private List<Integer> stringToList(String string) {
-        List<Integer> resultList = new ArrayList<>();
-        Pattern pattern = Pattern.compile(",");
-        if (!string.isEmpty())
-            resultList =  pattern.splitAsStream(string)
-                    .map(Integer::valueOf)
-                    .collect(Collectors.toList());
-        return resultList;
-    }
-
-    private String listToString(List<Integer> list) {
-        return list.stream().map(Object::toString)
-                .collect(Collectors.joining(","));
-    }
 }

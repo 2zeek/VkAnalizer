@@ -7,11 +7,13 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
+import com.vk.api.sdk.objects.groups.GroupFull;
 import com.vk.api.sdk.objects.groups.responses.GetMembersFieldsResponse;
 import com.vk.api.sdk.objects.likes.responses.GetListExtendedResponse;
+import com.vk.api.sdk.objects.likes.responses.GetListResponse;
 import com.vk.api.sdk.objects.users.UserXtrCounters;
-import com.vk.api.sdk.objects.wall.responses.GetRepostsResponse;
 import com.vk.api.sdk.objects.wall.responses.GetResponse;
+import com.vk.api.sdk.queries.likes.LikesGetListFilter;
 import com.vk.api.sdk.queries.likes.LikesType;
 import com.vk.api.sdk.queries.users.UserField;
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ import vkanalizer.vk.config.properties.VkClientProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static vkanalizer.utils.Utils.listToString;
 
 /**
  * Created by Nikolay V. Petrov on 28.08.2017.
@@ -63,11 +67,19 @@ public class VkClientInstanceImpl implements VkClientInstance {
                 .execute();
     }
 
-    public GetRepostsResponse getReposts(Integer id) throws ClientException, ApiException, InterruptedException {
+    public GetListResponse getReposts(Integer id) throws ClientException, ApiException, InterruptedException {
         Thread.sleep(1000);
-        return vkApiClient.wall().getReposts((UserActor) vkClientProperties.getUser().getActor())
+        return vkApiClient.likes().getList((UserActor) vkClientProperties.getUser().getActor(), LikesType.POST)
                 .ownerId(-vkClientProperties.getGroup().getId())
-                .postId(id)
+                .itemId(id)
+                .filter(LikesGetListFilter.COPIES)
+                .execute();
+    }
+
+    public List<GroupFull> getGroupInfo(List<String> ids) throws ClientException, ApiException, InterruptedException {
+        Thread.sleep(1000);
+        return vkApiClient.groups().getById((UserActor) vkClientProperties.getUser().getActor())
+                .groupIds(ids)
                 .execute();
     }
 

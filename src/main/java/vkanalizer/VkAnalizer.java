@@ -2,10 +2,10 @@ package vkanalizer;
 
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
-import com.vk.api.sdk.objects.users.User;
+import com.vk.api.sdk.objects.groups.Group;
+import com.vk.api.sdk.objects.likes.responses.GetListExtendedResponse;
 import com.vk.api.sdk.objects.users.UserMin;
 import com.vk.api.sdk.objects.wall.WallpostFull;
-import com.vk.api.sdk.objects.wall.responses.GetResponse;
 import vkanalizer.dao.LikeDao;
 import vkanalizer.dao.MemberDao;
 import vkanalizer.dao.PostDao;
@@ -71,7 +71,7 @@ public class VkAnalizer {
         ApplicationContext context = Application.start(VkAnalizer.class, args);
     }
 
-    @Scheduled(fixedDelay = 1800000)
+    @Scheduled(fixedDelay = 900000)
     void doStuff() throws ClientException, ApiException, InterruptedException {
 
         checkMembers();
@@ -144,15 +144,17 @@ public class VkAnalizer {
             Like like = new Like(wallpostFull.getId(), likesList);
             Like likeInBase = likeDao.findById(like.getId());
 
-            List<Integer> repostsList = new ArrayList<>();
-
-            log.info("Post id = " + wallpostFull.getId());
-            for (User user : vkClientInstance.getReposts(wallpostFull.getId()).getProfiles()) {
-                log.info("user = " + user.getFirstName() + " " + user.getLastName());
-                repostsList.add(user.getId());
+            List<String> repostsList = new ArrayList<>();
+            List<String> groupsRepostsList = new ArrayList<>();
+            List<Integer> responseRepostsList = vkClientInstance.getReposts(wallpostFull.getId()).getItems();
+            for (Integer integer : responseRepostsList) {
+                if (integer > 0)
+                    repostsList.add(String.valueOf(integer));
+                else
+                    groupsRepostsList.add(String.valueOf(Math.abs(integer)));
             }
 
-            repost = new Repost(wallpostFull.getId(), repostsList);
+            repost = new Repost(wallpostFull.getId(), responseRepostsList);
             repostInBase = repostDao.findById(repost.getId());
 
             StringBuilder message = new StringBuilder();
@@ -171,12 +173,22 @@ public class VkAnalizer {
                     }
                 }
 
-                if (!repost.getReposts().isEmpty()) {
+                if (!repostsList.isEmpty()) {
                     message
-                            .append("Репосты\n");
+                            .append("Репосты:\n");
                     for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(repost.getReposts()))) {
                         message
                                 .append(member.toString())
+                                .append("\n");
+                    }
+                }
+
+                if (!groupsRepostsList.isEmpty()) {
+                    message
+                            .append("Репосты групп:\n");
+                    for (Group group : vkClientInstance.getGroupInfo(groupsRepostsList)) {
+                        message
+                                .append(group.getName() + " (vk.com/club" + group.getId() + ")")
                                 .append("\n");
                     }
                 }
@@ -242,13 +254,15 @@ public class VkAnalizer {
 
 
                 if (!repost.equals(repostInBase)) {
-                    log.info("New: " + repost.toString());
-                    log.info("In base: " + repostInBase.toString());
 
                     List<Integer> newReposts = new ArrayList<>();
+                    List<String> newGroupReposts = new ArrayList<>();
                     for (Integer id : repost.getReposts()) {
                         if (!repostInBase.getReposts().contains(id)) {
-                            newReposts.add(id);
+                            if (id > 0)
+                                newReposts.add(id);
+                            else
+                                newGroupReposts.add(String.valueOf(Math.abs(id)));
                         }
                     }
 
@@ -264,10 +278,25 @@ public class VkAnalizer {
                         }
                     }
 
+                    if (!newGroupReposts.isEmpty()) {
+                        message
+                                .append("Новые репосты групп:")
+                                .append("\n");
+                        for (Group group : vkClientInstance.getGroupInfo(newGroupReposts)) {
+                            message
+                                    .append(group.getName() + " (vk.com/club" + group.getId() + ")")
+                                    .append("\n");
+                        }
+                    }
+
                     List<Integer> lostReposts = new ArrayList<>();
+                    List<String> lostGroupReposts = new ArrayList<>();
                     for (Integer id : repostInBase.getReposts()) {
                         if (!repost.getReposts().contains(id)) {
-                            lostReposts.add(id);
+                            if (id > 0)
+                                lostReposts.add(id);
+                            else
+                                lostGroupReposts.add(String.valueOf(Math.abs(id)));
                         }
                     }
 
@@ -279,6 +308,18 @@ public class VkAnalizer {
                         for (Member member : parseUserXtrCountersToMember(vkClientInstance.getUsersInfo(lostReposts))) {
                             message
                                     .append(member.toString())
+                                    .append("\n");
+                        }
+                    }
+
+                    if (!lostGroupReposts.isEmpty()) {
+
+                        message
+                                .append("Снятые репосты групп:")
+                                .append("\n");
+                        for (Group group : vkClientInstance.getGroupInfo(lostGroupReposts)) {
+                            message
+                                    .append(group.getName() + " (vk.com/club" + group.getId() + ")")
                                     .append("\n");
                         }
                     }
@@ -295,7 +336,7 @@ public class VkAnalizer {
 
                 if (!Objects.equals(post.getComments(), postInBase.getComments()))
                     message
-                            .append("Комментариев было/стало:")
+                            .append("Комментариев было/стало: ")
                             .append(postInBase.getComments())
                             .append("/")
                             .append(post.getComments());
