@@ -32,6 +32,7 @@ import java.util.Objects;
 import static vkanalizer.model.Member.parseUserXtrCountersToMember;
 import static vkanalizer.model.Member.parseUserXtrRoleToMember;
 import static vkanalizer.model.Post.wallpostToPost;
+import static vkanalizer.utils.Utils.listsSeparator;
 
 
 /**
@@ -214,7 +215,6 @@ public class VkAnalizer {
                     }
 
                     if (newLikes.size() != 0) {
-
                         message
                                 .append("Новые лайки:")
                                 .append("\n");
@@ -233,7 +233,6 @@ public class VkAnalizer {
                     }
 
                     if (lostLikes.size() != 0) {
-
                         message
                                 .append("Снятые лайки:")
                                 .append("\n");
@@ -260,10 +259,9 @@ public class VkAnalizer {
                     //Определяем новые репосты и добавляем их в отдельные списки
                     List<Integer> newReposts = new ArrayList<>();
                     List<String> newGroupReposts = new ArrayList<>();
-                    repostSeparator(repost.getReposts(), repostInBase.getReposts(), newReposts, newGroupReposts);
+                    listsSeparator(repost.getReposts(), repostInBase.getReposts(), newReposts, newGroupReposts);
 
                     if (!newReposts.isEmpty()) {
-
                         message
                                 .append("Новые репосты:")
                                 .append("\n");
@@ -291,10 +289,9 @@ public class VkAnalizer {
                     //Определяем снятые репосты и добавляем их в отдельные списки
                     List<Integer> lostReposts = new ArrayList<>();
                     List<String> lostGroupReposts = new ArrayList<>();
-                    repostSeparator(repostInBase.getReposts(), repost.getReposts(), lostReposts, lostGroupReposts);
+                    listsSeparator(repostInBase.getReposts(), repost.getReposts(), lostReposts, lostGroupReposts);
 
                     if (!lostReposts.isEmpty()) {
-
                         message
                                 .append("Снятые репосты:")
                                 .append("\n");
@@ -306,7 +303,6 @@ public class VkAnalizer {
                     }
 
                     if (!lostGroupReposts.isEmpty()) {
-
                         message
                                 .append("Снятые репосты групп:")
                                 .append("\n");
@@ -342,17 +338,6 @@ public class VkAnalizer {
                 log.info(wallpostFull.getId()+ ":" + message.toString());
                 vkClientInstance.sendPostMessage(wallpostFull.getId(), message.toString());
             }
-        }
-    }
-
-    private static void repostSeparator(List<Integer> list1, List<Integer> list2,
-                                        List<Integer> list3, List<String> list4) {
-        for (Integer id : list1) {
-            if (!list2.contains(id))
-                if (id > 0)
-                    list3.add(id);
-                else
-                    list4.add(String.valueOf(id));
         }
     }
 }
