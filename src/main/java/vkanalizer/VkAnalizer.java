@@ -188,7 +188,10 @@ public class VkAnalizer {
                             .append("Репосты групп:\n");
                     for (Group group : vkClientInstance.getGroupInfo(groupsRepostsList)) {
                         message
-                                .append(group.getName() + " (vk.com/club" + group.getId() + ")")
+                                .append(group.getName())
+                                .append(" (vk.com/club")
+                                .append(group.getId())
+                                .append(")")
                                 .append("\n");
                     }
                 }
@@ -319,7 +322,10 @@ public class VkAnalizer {
                                 .append("\n");
                         for (Group group : vkClientInstance.getGroupInfo(lostGroupReposts)) {
                             message
-                                    .append(group.getName() + " (vk.com/club" + group.getId() + ")")
+                                    .append(group.getName())
+                                    .append(" (vk.com/club")
+                                    .append(group.getId())
+                                    .append(")")
                                     .append("\n");
                         }
                     }
