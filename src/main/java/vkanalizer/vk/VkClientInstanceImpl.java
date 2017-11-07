@@ -23,8 +23,6 @@ import vkanalizer.vk.config.properties.VkClientProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-import static vkanalizer.utils.Utils.listToString;
-
 /**
  * Created by Nikolay V. Petrov on 28.08.2017.
  */

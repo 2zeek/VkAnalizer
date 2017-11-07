@@ -3,7 +3,6 @@ package vkanalizer;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.groups.Group;
-import com.vk.api.sdk.objects.likes.responses.GetListExtendedResponse;
 import com.vk.api.sdk.objects.users.UserMin;
 import com.vk.api.sdk.objects.wall.WallpostFull;
 import vkanalizer.dao.LikeDao;
@@ -258,16 +257,10 @@ public class VkAnalizer {
 
                 if (!repost.equals(repostInBase)) {
 
+                    //Определяем новые репосты и добавляем их в отдельные списки
                     List<Integer> newReposts = new ArrayList<>();
                     List<String> newGroupReposts = new ArrayList<>();
-                    for (Integer id : repost.getReposts()) {
-                        if (!repostInBase.getReposts().contains(id)) {
-                            if (id > 0)
-                                newReposts.add(id);
-                            else
-                                newGroupReposts.add(String.valueOf(Math.abs(id)));
-                        }
-                    }
+                    repostSeparator(repost.getReposts(), repostInBase.getReposts(), newReposts, newGroupReposts);
 
                     if (!newReposts.isEmpty()) {
 
@@ -287,21 +280,18 @@ public class VkAnalizer {
                                 .append("\n");
                         for (Group group : vkClientInstance.getGroupInfo(newGroupReposts)) {
                             message
-                                    .append(group.getName() + " (vk.com/club" + group.getId() + ")")
+                                    .append(group.getName())
+                                    .append(" (vk.com/club")
+                                    .append(group.getId())
+                                    .append(")")
                                     .append("\n");
                         }
                     }
 
+                    //Определяем снятые репосты и добавляем их в отдельные списки
                     List<Integer> lostReposts = new ArrayList<>();
                     List<String> lostGroupReposts = new ArrayList<>();
-                    for (Integer id : repostInBase.getReposts()) {
-                        if (!repost.getReposts().contains(id)) {
-                            if (id > 0)
-                                lostReposts.add(id);
-                            else
-                                lostGroupReposts.add(String.valueOf(Math.abs(id)));
-                        }
-                    }
+                    repostSeparator(repostInBase.getReposts(), repost.getReposts(), lostReposts, lostGroupReposts);
 
                     if (!lostReposts.isEmpty()) {
 
@@ -352,6 +342,17 @@ public class VkAnalizer {
                 log.info(wallpostFull.getId()+ ":" + message.toString());
                 vkClientInstance.sendPostMessage(wallpostFull.getId(), message.toString());
             }
+        }
+    }
+
+    private static void repostSeparator(List<Integer> list1, List<Integer> list2,
+                                        List<Integer> list3, List<String> list4) {
+        for (Integer id : list1) {
+            if (!list2.contains(id))
+                if (id > 0)
+                    list3.add(id);
+                else
+                    list4.add(String.valueOf(id));
         }
     }
 }
