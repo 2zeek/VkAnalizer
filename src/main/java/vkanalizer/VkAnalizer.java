@@ -199,7 +199,6 @@ public class VkAnalizer {
                 postDao.insert(post);
                 likeDao.insert(like);
                 repostDao.insert(repost);
-                vkClientInstance.sendPostMessage(post.getId(), message.toString());
 
             } else {
 
