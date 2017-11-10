@@ -1,5 +1,7 @@
 package vkanalizer.model;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -35,8 +37,7 @@ public class Repost {
         if (o == null || getClass() != o.getClass()) return false;
         Repost repost = (Repost) o;
         return Objects.equals(repost.id, id) &&
-                (this.repostsList.containsAll(repost.repostsList) &&
-                repost.repostsList.containsAll(this.repostsList));
+                CollectionUtils.isEqualCollection(this.repostsList, repost.repostsList);
     }
 
     @Override

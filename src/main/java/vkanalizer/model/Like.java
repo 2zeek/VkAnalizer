@@ -2,6 +2,7 @@ package vkanalizer.model;
 
 import java.util.List;
 import java.util.Objects;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * Created by Nikolay V. Petrov on 27.10.2017.
@@ -38,8 +39,7 @@ public class Like {
         if (o == null || getClass() != o.getClass()) return false;
         Like like = (Like) o;
         return Objects.equals(like.id, id) &&
-                (this.likesList.containsAll(like.likesList) &&
-                like.likesList.containsAll(this.likesList));
+                CollectionUtils.isEqualCollection(this.likesList, like.likesList);
     }
 
     @Override
