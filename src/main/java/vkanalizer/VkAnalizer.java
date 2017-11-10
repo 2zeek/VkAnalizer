@@ -121,6 +121,9 @@ public class VkAnalizer {
         }
 
         if (!membersMessage.toString().isEmpty()) {
+            membersMessage
+                    .append("Всего пользователей: ")
+                    .append(membersList.size());
             log.info(membersMessage.toString());
             vkClientInstance.sendMemberMessage(membersMessage.toString());
         }
