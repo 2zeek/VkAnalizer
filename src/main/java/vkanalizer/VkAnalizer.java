@@ -242,12 +242,14 @@ public class VkAnalizer {
                         }
                     }
 
-                    message
-                            .append("Лайков было/стало: ")
-                            .append(likeInBase.getLikes().size())
-                            .append("/")
-                            .append(like.getLikes().size())
-                            .append("\n");
+                    if (Objects.equals(likeInBase.getLikes().size(), like.getLikes().size())) {
+                        message
+                                .append("Лайков было/стало: ")
+                                .append(likeInBase.getLikes().size())
+                                .append("/")
+                                .append(like.getLikes().size())
+                                .append("\n");
+                    }
 
                     likeDao.update(like);
                 }
@@ -315,12 +317,14 @@ public class VkAnalizer {
                         }
                     }
 
-                    message
-                            .append("Репостов было/стало: ")
-                            .append(repostInBase.getReposts().size())
-                            .append("/")
-                            .append(repost.getReposts().size())
-                            .append("\n");
+                    if (Objects.equals(repostInBase.getReposts().size(), repost.getReposts().size())) {
+                        message
+                                .append("Репостов было/стало: ")
+                                .append(repostInBase.getReposts().size())
+                                .append("/")
+                                .append(repost.getReposts().size())
+                                .append("\n");
+                    }
 
                     repostDao.update(repost);
                 }
