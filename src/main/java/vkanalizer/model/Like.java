@@ -38,7 +38,8 @@ public class Like {
         if (o == null || getClass() != o.getClass()) return false;
         Like like = (Like) o;
         return Objects.equals(like.id, id) &&
-                Objects.equals(like.likesList, likesList);
+                (this.likesList.containsAll(like.likesList) &&
+                like.likesList.containsAll(this.likesList));
     }
 
     @Override

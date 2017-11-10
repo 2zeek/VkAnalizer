@@ -35,7 +35,8 @@ public class Repost {
         if (o == null || getClass() != o.getClass()) return false;
         Repost repost = (Repost) o;
         return Objects.equals(repost.id, id) &&
-                Objects.equals(repost.repostsList, repostsList);
+                (this.repostsList.containsAll(repost.repostsList) &&
+                repost.repostsList.containsAll(this.repostsList));
     }
 
     @Override
